@@ -14,7 +14,7 @@ from win32gui import GetWindowText, GetForegroundWindow
 import io
 import qtpy
 
-__version__ = (1, 0, 1)
+__version__ = (1, 0, 2)
 
 if qtpy.API == 'pyqt4':
     from PyQt4.QtGui import QApplication, QImage
