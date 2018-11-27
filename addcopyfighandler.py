@@ -19,10 +19,12 @@ __version__ = (1, 0, 1)
 if qtpy.API == 'pyqt4':
     from PyQt4.QtGui import QApplication, QImage
     clipboard = QApplication.clipboard
+    plt.switch_backend('Qt4Agg')
 elif qtpy.API == 'pyqt5':
     from PyQt5.QtGui import QGuiApplication, QImage
     clipboard = QGuiApplication.clipboard
-    
+    plt.switch_backend('Qt5Agg')
+
 oldfig = plt.figure
 
 
