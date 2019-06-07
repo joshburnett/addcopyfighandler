@@ -1,1 +1,1 @@
-python setup.py sdist --formats=gztar,zip bdist_wheel
+python setup.py sdist --formats=zip bdist_wheel --universal

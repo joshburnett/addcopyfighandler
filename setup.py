@@ -19,7 +19,7 @@ def get_version(filename='addcopyfighandler.py'):
 
 # What packages are required for this module to be executed?
 REQUIRED = [
-    'matplotlib', 'pywin32', 'qtpy',
+    'matplotlib', 'pywin32', 'pillow',
 ]
 
 setup(

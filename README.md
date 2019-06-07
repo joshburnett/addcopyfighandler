@@ -12,9 +12,16 @@ https://stackoverflow.com/questions/31607458/how-to-add-clipboard-support-to-mat
 Releases
 --------
 
-### 1.0: 2017-08-09
+### 2.0.0: 2019-04-15
 
-- Initial release
+- Remove Qt requirement. Now use Pillow to grab the figure image, and win32clipboard to manage the Windows clipboard.
+
+
+### 1.0.2: 2018-11-27
+
+- Force use of Qt4Agg or Qt5Agg. Some installs will default to TkAgg backend, which this module
+doesn't support. Forcing the backend to switch when loading this module saves the user from having
+to manually specify one of the Qt backends in every analysis.
 
 
 ### 1.0.1: 2018-11-27
@@ -22,8 +29,8 @@ Releases
 - Improve setup.py: remove need for importing module, add proper installation dependencies
 - Change readme from ReST to Markdown
 
-### 1.0.2: 2018-11-27
 
-- Force use of Qt4Agg or Qt5Agg. Some installs will default to TkAgg backend, which this module
-doesn't support. Forcing the backend to switch when loading this module saves the user from having
-to manually specify one of the Qt backends in every analysis.
+### 1.0: 2017-08-09
+
+- Initial release
+
