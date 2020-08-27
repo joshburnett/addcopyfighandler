@@ -11,6 +11,10 @@ https://stackoverflow.com/questions/31607458/how-to-add-clipboard-support-to-mat
 
 Releases
 --------
+### 2.1.0: 2020-08-27
+
+- Remove Pillow
+- Add support for png, svg, jpg, jpeg fileformat.
 
 ### 2.0.0: 2019-04-15
 
