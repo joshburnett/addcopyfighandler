@@ -2,7 +2,7 @@
 """
 Monkey-patch plt.figure() to support Ctrl+C for copying to clipboard as an image
 
-@author: Josh Burnett, Sylvain Finot
+@authors: Josh Burnett, Sylvain Finot
 Modified from code found on Stack Exchange:
     https://stackoverflow.com/questions/31607458/how-to-add-clipboard-support-to-matplotlib-figures
     https://stackoverflow.com/questions/34322132/copy-image-to-clipboard-in-python3
@@ -13,7 +13,7 @@ Modified from code found on Stack Exchange:
 import matplotlib.pyplot as plt
 from win32gui import GetWindowText, GetForegroundWindow
 import win32clipboard
-import io
+from io import BytesIO
 
 __version__ = (2, 1, 0)
 oldfig = plt.figure
@@ -39,7 +39,7 @@ def copyfig(fig=None, *args, **kwargs):
 
     """
     #By digging into windows API
-    format_dict = {"png":49375,"svg":49531,"jpg":49374,"jpeg":49374}
+    format_dict = {"png":"PNG","svg":"image/svg+xml","jpg":"JFIF","jpeg":"JFIF"}
     
     #if no format is passed to savefig get the default one
     format = kwargs.get('format', plt.rcParams["savefig.format"])
@@ -59,16 +59,16 @@ def copyfig(fig=None, *args, **kwargs):
                 
     if fig is None:
         raise AttributeError("No figure found !")
-    
+        
+    formatID = win32clipboard.RegisterClipboardFormat(format_dict[format])
     with BytesIO() as buf:
         fig.savefig(buf, *args, **kwargs)
         data = buf.getvalue()
     
     win32clipboard.OpenClipboard()
     win32clipboard.EmptyClipboard()
-    win32clipboard.SetClipboardData(format_dict[format],data)
+    win32clipboard.SetClipboardData(formatID, data)   
     win32clipboard.CloseClipboard()
-
 
 def newfig(*args, **kwargs):
     fig = oldfig(*args, **kwargs)
