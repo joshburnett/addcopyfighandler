@@ -80,8 +80,8 @@ def newfig(*args, **kwargs):
         if event.key == 'ctrl+c':
             kwargs = {}
             kwargs.update(other_savefig_kwargs)
-            if file_format:
-                kwargs["format"] = file_format
+            if image_file_format:
+                kwargs["format"] = image_file_format
             if image_dpi:
                 kwargs["dpi"] = image_dpi
             copyfig(**kwargs)
