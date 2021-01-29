@@ -15,9 +15,12 @@ from win32gui import GetWindowText, GetForegroundWindow
 import win32clipboard
 from io import BytesIO
 
-__version__ = (2, 1, 0)
+__version__ = (2, 1, 1)
 oldfig = plt.figure
 
+image_file_format = None
+image_dpi = None
+other_savefig_kwargs = {}
 
 def copyfig(fig=None, *args, **kwargs):
     """
@@ -75,7 +78,13 @@ def newfig(*args, **kwargs):
 
     def clipboard_handler(event):
         if event.key == 'ctrl+c':
-            copyfig()
+            kwargs = {}
+            kwargs.update(other_savefig_kwargs)
+            if file_format:
+                kwargs["format"] = file_format
+            if image_dpi:
+                kwargs["dpi"] = image_dpi
+            copyfig(**kwargs)
 
     fig.canvas.mpl_connect('key_press_event', clipboard_handler)
     return fig
