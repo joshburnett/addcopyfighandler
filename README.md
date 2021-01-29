@@ -8,9 +8,9 @@ the figure to the clipboard as an image.
 Original concept code taken from:
 https://stackoverflow.com/questions/31607458/how-to-add-clipboard-support-to-matplotlib-figures
 
-Advanced Controll
+Advanced Control
 --------
-to control dpi, image-format, or other savefig key wards, set their falue after importing like so:
+to control dpi, image-format, or other savefig key words, set their value after importing like so:
 import addcopyfighandler
 addcopyfighandler.image_file_format = "png"
 addcopyfighandler.image_dpi = 250
