@@ -16,7 +16,7 @@ import win32clipboard
 from io import BytesIO
 from PIL import Image
 
-__version__ = (2, 1, 1)
+__version__ = (2, 0, 1)
 oldfig = plt.figure
 
 image_file_format = None
