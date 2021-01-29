@@ -11,11 +11,12 @@ https://stackoverflow.com/questions/31607458/how-to-add-clipboard-support-to-mat
 Advanced Control
 --------
 to control dpi, image-format, or other savefig key words, set their value after importing like so:
+```python
 import addcopyfighandler
 addcopyfighandler.image_file_format = "png"
 addcopyfighandler.image_dpi = 250
 addcopyfighandler.other_savefig_kwargs = {"pad_inches":0.5,"transparent":True}
-
+```
 
 Releases
 --------
