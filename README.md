@@ -11,22 +11,27 @@ https://stackoverflow.com/questions/31607458/how-to-add-clipboard-support-to-mat
 Advanced Control
 --------
 to control dpi, image-format, or other savefig key words, set their value after importing like so:
+```python
 import addcopyfighandler
 addcopyfighandler.image_file_format = "png"
 addcopyfighandler.image_dpi = 250
 addcopyfighandler.other_savefig_kwargs = {"pad_inches":0.5,"transparent":True}
-
+```
 
 Releases
 --------
-### 2.1.1: 2020-08-27
+~~### 2.1.1: 2020-08-27~~
+
+~~- add user input method for image-format and dpi control~~
+
+~~### 2.1.0: 2020-08-27~~
+
+~~- Remove Pillow~~
+~~- Add support for png, svg, jpg, jpeg fileformat.~~
+
+### 2.0.1: 2020-08-27
 
 - add user input method for image-format and dpi control
-
-### 2.1.0: 2020-08-27
-
-- Remove Pillow
-- Add support for png, svg, jpg, jpeg fileformat.
 
 ### 2.0.0: 2019-04-15
 
