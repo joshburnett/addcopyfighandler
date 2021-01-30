@@ -42,17 +42,6 @@ def copyfig(fig=None, *args, **kwargs):
         If no figure is found
 
     """
-    #By digging into windows API
-    format_dict = {"png":"PNG","svg":"image/svg+xml","jpg":"JFIF","jpeg":"JFIF"}
-
-    #if no format is passed to savefig get the default one
-    format = kwargs.get('format', plt.rcParams["savefig.format"])
-    format = format.lower()
-
-    if not format in format_dict:
-        raise ValueError(f"Format {format} is not supported "\
-                         f"(supported formats: {', '.join(list(format_dict.keys()))})")
-
     if fig is None:
         # find the figure window that has UI focus right now (not necessarily the same as plt.gcf())
         fig_window_text = GetWindowText(GetForegroundWindow())
