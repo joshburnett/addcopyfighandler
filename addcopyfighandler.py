@@ -26,15 +26,19 @@ On Windows:
     - If Pillow is not installed, the supported format specifiers are 'png,' 'jpg,' 'jpeg,' and 'svg.'
         All other format specifiers will be overridden and the figure will be copied to the clipboard as PNG data.
 
+On MacOS:
+    - Only works with the QtAgg backend.
+
 On Linux:
     - Requires either Qt or GTK libraries for clipboard interaction. Automatically detects which is being used from
         matplotlib.get_backend().
-        - Qt support requires PyQt5 or PySide2.
+        - Qt support requires PyQt or PySide2.
         - GTK support requires pycairo, PyGObject and PIL/pillow to be installed.
     - The figure will be copied to the clipboard as a PNG, regardless of matplotlib.rcParams['savefig.format'].
 """
 
 import platform
+import matplotlib
 import matplotlib.pyplot as plt
 from io import BytesIO
 
@@ -44,6 +48,8 @@ __version_info__ = tuple(int(i) if i.isdigit() else i for i in __version__.split
 oldfig = plt.figure
 
 ostype = platform.system().lower()
+
+backend = plt.get_backend()
 
 
 if ostype == 'windows':
@@ -125,56 +131,53 @@ if ostype == 'windows':
         win32clipboard.SetClipboardData(format_id, data)
         win32clipboard.CloseClipboard()
 
+elif backend == 'Qt5Agg' or backend == 'QtAgg':
+    # Use Qt version from matplotlib.
+    import importlib
+    qtver = matplotlib.backends.qt_compat.QT_API
+    QtGui = importlib.import_module(qtver + ".QtGui")
+    QtWidgets = importlib.import_module(qtver + ".QtWidgets")
+    QImage = QtGui.QImage
+    QApplication = QtWidgets.QApplication
+    clipboard = QtGui.QGuiApplication.clipboard
+
+    def copyfig(fig=None, *args, **kwargs):
+        """
+        Parameters
+        ----------
+        fig : matplotlib figure, optional
+            If None, get the figure that has UI focus
+        *args : arguments that are passed to savefig
+        **kwargs : keywords arguments that are passed to savefig
+
+        Raises
+        ------
+        AttributeError
+            If no figure is found
+        """
+
+        if fig is None:
+            # Find the figure window that has UI focus right now (not necessarily
+            # the same as plt.gcf() when in interactive mode)
+            fig_window_text = QApplication.activeWindow().windowTitle()
+            for i in plt.get_fignums():
+                if plt.figure(i).canvas.manager.get_window_title() == fig_window_text:
+                    fig = plt.figure(i)
+                    break
+
+        if fig is None:
+            raise AttributeError('No figure found!')
+
+        # Store the image in a buffer using savefig(). This has the
+        # advantage of applying all the default savefig parameters
+        # such as resolution and background color, which would be ignored
+        # if we simply grab the canvas as displayed.
+        with BytesIO() as buf:
+            fig.savefig(buf, format='png', *args, **kwargs)
+            clipboard().setImage(QImage.fromData(buf.getvalue()))
+
 elif ostype == 'linux':
-    backend = plt.get_backend()
-    if backend == 'Qt5Agg':
-        try:
-            from PySide2.QtGui import QGuiApplication, QImage
-            from PySide2.QtWidgets import QApplication
-        except ImportError:
-            from PyQt5.QtGui import QGuiApplication, QImage
-            from PyQt5.QtWidgets import QApplication
-        clipboard = QGuiApplication.clipboard
-
-        def copyfig(fig=None, *args, **kwargs):
-            """
-            Parameters
-            ----------
-            fig : matplotlib figure, optional
-                If None, get the figure that has UI focus
-            format : type of image to be pasted to the clipboard ('png', 'jpg', 'jpeg', 'tiff')
-                If None, uses matplotlib.rcParams["savefig.format"]
-                If resulting format is not in ('png', 'jpg', 'jpeg', 'tiff'), will override to PNG.
-            *args : arguments that are passed to savefig
-            **kwargs : keywords arguments that are passed to savefig
-
-            Raises
-            ------
-            AttributeError
-                If no figure is found
-            """
-
-            if fig is None:
-                # Find the figure window that has UI focus right now (not necessarily
-                # the same as plt.gcf() when in interactive mode)
-                fig_window_text = QApplication.activeWindow().windowTitle()
-                for i in plt.get_fignums():
-                    if plt.figure(i).canvas.manager.get_window_title() == fig_window_text:
-                        fig = plt.figure(i)
-                        break
-
-            if fig is None:
-                raise AttributeError('No figure found!')
-
-            # Store the image in a buffer using savefig(). This has the
-            # advantage of applying all the default savefig parameters
-            # such as resolution and background color, which would be ignored
-            # if we simply grab the canvas as displayed.
-            with BytesIO() as buf:
-                fig.savefig(buf, format='png', *args, **kwargs)
-                clipboard().setImage(QImage.fromData(buf.getvalue()))
-
-    elif backend == 'GTK3Agg':
+    if backend == 'GTK3Agg':
         import gi
         gi.require_version('Gtk', '3.0')
         from gi.repository import Gtk
@@ -233,17 +236,17 @@ elif ostype == 'linux':
                 clipboard.set_image(pixbuf)
                 clipboard.store()
     else:
-        raise ValueError(f'Unsupported matplotlib backend ({backend}). On Linux must be Qt5Agg, or GTK3Agg.')
+        raise ValueError(f'Unsupported matplotlib backend ({backend}). On Linux must be QtAgg, or GTK3Agg.')
 
 else:
-    raise ValueError(f'addcopyfighandler: Supported OSes are Windows and Linux.  Current OS: {ostype}')
+    raise ValueError(f'addcopyfighandler: Supported OSes are Windows and Linux, MacOS only with QtAgg backend.  Current OS: {ostype}')
 
 
 def newfig(*args, **kwargs):
     fig = oldfig(*args, **kwargs)
 
     def clipboard_handler(event):
-        if event.key == 'ctrl+c':
+        if event.key == 'ctrl+c' or event.key == 'cmd+c':
             copyfig()
 
     fig.canvas.mpl_connect('key_press_event', clipboard_handler)
