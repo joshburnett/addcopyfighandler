@@ -34,6 +34,7 @@ On Linux:
     - The figure will be copied to the clipboard as a PNG, regardless of matplotlib.rcParams['savefig.format'].
 """
 
+from functools import wraps
 import platform
 import matplotlib.pyplot as plt
 from io import BytesIO
@@ -127,7 +128,7 @@ if ostype == 'windows':
 
 elif ostype == 'linux':
     backend = plt.get_backend()
-    if backend == 'Qt5Agg':
+    if backend == 'Qt5Agg' or backend == 'QtAgg':
         try:
             from PySide2.QtGui import QGuiApplication, QImage
             from PySide2.QtWidgets import QApplication
@@ -239,6 +240,7 @@ else:
     raise ValueError(f'addcopyfighandler: Supported OSes are Windows and Linux.  Current OS: {ostype}')
 
 
+@wraps(plt.figure)
 def newfig(*args, **kwargs):
     fig = oldfig(*args, **kwargs)
 
