@@ -1,0 +1,41 @@
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "addcopyfighandler"
+authors=[
+    {name = "Josh Burnett", email="github@burnettsonline.org"}
+]
+description="Adds a Ctrl+C handler to matplotlib figures for copying the figure to the clipboard"
+readme = "README.md"
+dynamic = ["version"]
+dependencies = [
+    "matplotlib",
+    "pywin32;platform_system=='Windows'"
+]
+keywords=["addcopyfighandler", "figure", "matplotlib", "handler", "copy"]
+platforms=['windows', 'linux']
+classifiers = [
+    'Development Status :: 5 - Production/Stable',
+    'Intended Audience :: Developers',
+    'License :: OSI Approved :: MIT License',
+    'Programming Language :: Python',
+    'Programming Language :: Python :: 3',
+    'Programming Language :: Python :: 3.7',
+    'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
+    'Programming Language :: Python :: 3.12',
+]
+[project.urls]
+Repository = "https://github.com/joshburnett/addcopyfighandler"
+
+[tool.flit.sdist]
+exclude = [
+    "dist",
+    "build",
+    ".gitignore",
+    ".venv"
+]

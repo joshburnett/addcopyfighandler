@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Monkey-patch plt.figure() to support Ctrl+C for copying to clipboard as an image
 
@@ -35,8 +34,9 @@ On Linux:
 """
 
 import platform
-import matplotlib.pyplot as plt
 from io import BytesIO
+
+import matplotlib.pyplot as plt
 
 __version__ = '3.1.0'
 __version_info__ = tuple(int(i) if i.isdigit() else i for i in __version__.split('.'))
