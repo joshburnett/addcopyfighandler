@@ -38,7 +38,7 @@ import platform
 import matplotlib.pyplot as plt
 from io import BytesIO
 
-__version__ = '3.0.0'
+__version__ = '3.1.0'
 __version_info__ = tuple(int(i) if i.isdigit() else i for i in __version__.split('.'))
 
 oldfig = plt.figure
@@ -127,13 +127,22 @@ if ostype == 'windows':
 
 elif ostype == 'linux':
     backend = plt.get_backend()
-    if backend == 'Qt5Agg':
+    if 'Qt' in backend:
         try:
             from PySide2.QtGui import QGuiApplication, QImage
             from PySide2.QtWidgets import QApplication
         except ImportError:
-            from PyQt5.QtGui import QGuiApplication, QImage
-            from PyQt5.QtWidgets import QApplication
+            try:
+                from PySide6.QtGui import QGuiApplication, QImage
+                from PySide6.QtWidgets import QApplication
+            except ImportError:
+                try:
+                    from PyQt5.QtGui import QGuiApplication, QImage
+                    from PyQt5.QtWidgets import QApplication
+                except ImportError:
+                    from PyQt6.QtGui import QGuiApplication, QImage
+                    from PyQt6.QtWidgets import QApplication
+
         clipboard = QGuiApplication.clipboard
 
         def copyfig(fig=None, *args, **kwargs):
@@ -175,14 +184,16 @@ elif ostype == 'linux':
                 clipboard().setImage(QImage.fromData(buf.getvalue()))
 
     elif backend == 'GTK3Agg':
+        # Only GTK 3 is supported, as GTK 4 has totally changed the way clipboard data is handled and I can't figure
+        #   it out. I'm totally open to someone else solving this and submitting a PR if they want. I don't use GTK.
+        import subprocess
         import gi
         gi.require_version('Gtk', '3.0')
-        from gi.repository import Gtk
-        from gi.repository.Gtk import Clipboard
-        from gi.repository import GLib, GdkPixbuf, Gdk
-        from PIL import Image
-        import subprocess
+        from gi.repository import Gtk, GLib, GdkPixbuf, Gdk
 
+        from PIL import Image
+
+        from gi.repository.Gtk import Clipboard
         clipboard = Clipboard.get(Gdk.SELECTION_CLIPBOARD)
 
         def copyfig(fig=None, *args, **kwargs):
@@ -216,13 +227,17 @@ elif ostype == 'linux':
                     if plt.figure(i).canvas.manager.get_window_title() == fig_window_text:
                         fig = plt.figure(i)
                         break
+                else:
+                    # The above methods apparently no longer work w/ Wayland, so let's just use plt.gcf()
+                    # and hope for the best
+                    fig = plt.gcf()
 
             # Store the image in a buffer using savefig(). This has the
             # advantage of applying all the default savefig parameters
             # such as resolution and background color, which would be ignored
             # if we simply grab the canvas as displayed.
             with BytesIO() as buf:
-                fig.savefig(buf, format=format, *args, **kwargs)
+                fig.savefig(buf, format='png', *args, **kwargs)
                 im = Image.open(buf, formats=['PNG'])
 
                 w, h = im.size
@@ -232,8 +247,9 @@ elif ostype == 'linux':
 
                 clipboard.set_image(pixbuf)
                 clipboard.store()
+
     else:
-        raise ValueError(f'Unsupported matplotlib backend ({backend}). On Linux must be Qt5Agg, or GTK3Agg.')
+        raise ValueError(f'Unsupported matplotlib backend ({backend}). On Linux must be QtAgg or GTK3Agg.')
 
 else:
     raise ValueError(f'addcopyfighandler: Supported OSes are Windows and Linux.  Current OS: {ostype}')

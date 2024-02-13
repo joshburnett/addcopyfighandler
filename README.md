@@ -18,7 +18,7 @@ Uses code & concepts from:
 ## Windows-specific behavior:
 
 - addcopyfighandler should work regardless of which graphical backend is being used by matplotlib
-    (tkagg, gtk3agg, qt5agg, etc.).
+    (tkagg, gtk3agg, qtagg, etc.).
 - If `matplotlib.rcParams['savefig.format']` is `'svg'`, the figure will be copied to the clipboard
     as an SVG.
 - If Pillow is installed, all non-SVG format specifiers will be overridden, and the
@@ -31,13 +31,19 @@ Uses code & concepts from:
 
 - Requires either Qt or GTK libraries for clipboard interaction. Automatically detects which is being used from
     `matplotlib.get_backend()`.
-    - Qt support requires `PyQt5` or `PySide2`.
+    - Qt support requires `PyQt5`, `PyQt6`, `PySide2` or `PySide6`.
     - GTK support requires `pycairo`, `PyGObject` and `PIL` or `pillow` to be installed.
+      - Only GTK 3 is supported, as GTK 4 has totally changed the way clipboard data is handled and I can't figure
+        it out. I'm totally open to someone else solving this and submitting a PR if they want. I don't use GTK.
 - The figure will be copied to the clipboard as a PNG, regardless of `matplotlib.rcParams['savefig.format']`. Alas, SVG output is not currently supported. Pull requests that enable SVG support would be welcomed.
 
 
 Releases
 --------
+### 3.1.0: 2024-02-13
+
+- Add support for PyQt6 and PySide6 on Linux (already supported on Windows)
+
 ### 3.0.0: 2021-03-28
 
 - Add Linux support (tested on Ubuntu). Requires PyQt5, PySide2, or PyObject libraries; relevant library chosen based on matplotlib graphical backend in use. No SVG support.
