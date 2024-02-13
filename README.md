@@ -40,6 +40,10 @@ Uses code & concepts from:
 
 Releases
 --------
+### 3.1.1: 2024-02-13
+
+- Wrap matplotlib.pyploy.figure appropriately to maintain docstring (thanks @eendebakpt!)
+
 ### 3.1.0: 2024-02-13
 
 - Add support for PyQt6 and PySide6 on Linux (already supported on Windows)

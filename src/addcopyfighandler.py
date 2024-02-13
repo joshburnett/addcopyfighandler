@@ -39,7 +39,7 @@ from functools import wraps
 
 import matplotlib.pyplot as plt
 
-__version__ = '3.1.1'
+__version__ = '3.1.1.post1'
 __version_info__ = tuple(int(i) if i.isdigit() else i for i in __version__.split('.'))
 
 oldfig = plt.figure
