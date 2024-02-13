@@ -35,10 +35,11 @@ On Linux:
 
 import platform
 from io import BytesIO
+from functools import wraps
 
 import matplotlib.pyplot as plt
 
-__version__ = '3.1.0'
+__version__ = '3.1.1'
 __version_info__ = tuple(int(i) if i.isdigit() else i for i in __version__.split('.'))
 
 oldfig = plt.figure
@@ -255,6 +256,7 @@ else:
     raise ValueError(f'addcopyfighandler: Supported OSes are Windows and Linux.  Current OS: {ostype}')
 
 
+@wraps(plt.figure)
 def newfig(*args, **kwargs):
     fig = oldfig(*args, **kwargs)
 
