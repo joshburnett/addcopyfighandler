@@ -1,14 +1,12 @@
-addcopyfighandler: Add a Ctrl+C handler to matplotlib figures for copying the figure to the clipboard
+addcopyfighandler: Add a Ctrl+C / Cmd+C handler to matplotlib figures for copying the figure to the clipboard
 ======================================================================================================
 
 Importing this module (after importing matplotlib or pyplot) will add a handler
 to all subsequently-created matplotlib figures
-so that pressing Ctrl+C with a matplotlib figure window selected will copy
+so that pressing Ctrl+C (or Cmd+C on MacOS) with a matplotlib figure window selected will copy
 the figure to the clipboard as an image.  The copied image is generated through
 matplotlib.pyplot.savefig(), and thus is affected by the relevant rcParams
 settings (savefig.dpi, savefig.format, etc.).
-
-Windows and Linux are currently supported. Pull requests implementing macOS support are welcome.
 
 Uses code & concepts from:
 - https://stackoverflow.com/questions/31607458/how-to-add-clipboard-support-to-matplotlib-figures
@@ -38,8 +36,16 @@ Uses code & concepts from:
 - The figure will be copied to the clipboard as a PNG, regardless of `matplotlib.rcParams['savefig.format']`. Alas, SVG output is not currently supported. Pull requests that enable SVG support would be welcomed.
 
 
+## MacOS-specific behavior:
+    - Requires Qt, whether PyQt5/6 or PySide2/6.
+    - The figure will be copied to the clipboard as a PNG, regardless of matplotlib.rcParams['savefig.format'].
+
 Releases
 --------
+### 3.2.0: 2024-02-13
+
+- Added MacOS support (thanks @orlp!). No SVG support, same as Linux.
+
 ### 3.1.1: 2024-02-13
 
 - Wrap matplotlib.pyploy.figure appropriately to maintain docstring (thanks @eendebakpt!)
