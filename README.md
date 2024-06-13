@@ -37,11 +37,16 @@ Uses code & concepts from:
 
 
 ## MacOS-specific behavior:
-    - Requires Qt, whether PyQt5/6 or PySide2/6.
-    - The figure will be copied to the clipboard as a PNG, regardless of matplotlib.rcParams['savefig.format'].
+
+- Requires Qt, whether PyQt5/6 or PySide2/6.
+- The figure will be copied to the clipboard as a PNG, regardless of matplotlib.rcParams['savefig.format'].
 
 Releases
 --------
+### 3.2.1: 2024-06-13
+
+- Made backend checks case-insensitive due to undocumented changes in matplotlib 3.9.
+
 ### 3.2.0: 2024-02-13
 
 - Added MacOS support (thanks @orlp!). No SVG support, same as Linux.
