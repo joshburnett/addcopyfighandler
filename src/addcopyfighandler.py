@@ -45,7 +45,7 @@ from functools import wraps
 import matplotlib.backends
 import matplotlib.pyplot as plt
 
-__version__ = '3.2.0'
+__version__ = '3.2.1'
 __version_info__ = tuple(int(i) if i.isdigit() else i for i in __version__.split('.'))
 
 oldfig = plt.figure
@@ -137,7 +137,7 @@ if ostype == 'windows':
 
         print(f'Figure copied.')
 
-elif 'Qt' in backend:
+elif 'qt' in backend.lower():
     # Use Qt version from matplotlib.
     import importlib
 
@@ -191,7 +191,7 @@ elif 'Qt' in backend:
 
         print(f'Figure copied.')
 
-elif ostype == 'linux' and backend == 'GTK3Agg':
+elif ostype == 'linux' and backend.lower() == 'gtk3agg':
     # Only GTK 3 is supported, as GTK 4 has totally changed the way clipboard data is handled and I can't figure
     #   it out. I'm totally open to someone else solving this and submitting a PR if they want. I don't use GTK.
     import subprocess
