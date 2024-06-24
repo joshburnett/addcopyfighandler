@@ -45,7 +45,7 @@ from functools import wraps
 import matplotlib.backends
 import matplotlib.pyplot as plt
 
-__version__ = '3.2.1'
+__version__ = '3.2.2'
 __version_info__ = tuple(int(i) if i.isdigit() else i for i in __version__.split('.'))
 
 oldfig = plt.figure
@@ -264,13 +264,19 @@ else:
 
 @wraps(plt.figure)
 def newfig(*args, **kwargs):
+    if not hasattr(newfig, "handler_connected"):
+        newfig.handler_connected = False
+
     fig = oldfig(*args, **kwargs)
 
     def clipboard_handler(event):
         if event.key in ('ctrl+c', 'cmd+c'):
             copyfig()
 
-    fig.canvas.mpl_connect('key_press_event', clipboard_handler)
+    if not newfig.handler_connected:
+        fig.canvas.mpl_connect('key_press_event', clipboard_handler)
+        newfig.handler_connected = True
+
     return fig
 
 
