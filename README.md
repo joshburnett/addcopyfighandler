@@ -43,6 +43,10 @@ Uses code & concepts from:
 
 Releases
 --------
+### 3.2.2: 2024-06-24
+
+Thanks to @rgw5267 for finding and fixing [a bug related to the event handler being registered multiple times](https://github.com/joshburnett/addcopyfighandler/issues/17).
+
 ### 3.2.1: 2024-06-13
 
 - Made backend checks case-insensitive due to undocumented changes in matplotlib 3.9.
