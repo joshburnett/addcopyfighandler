@@ -45,7 +45,7 @@ from functools import wraps
 import matplotlib.backends
 import matplotlib.pyplot as plt
 
-__version__ = '3.2.2'
+__version__ = '3.2.3'
 __version_info__ = tuple(int(i) if i.isdigit() else i for i in __version__.split('.'))
 
 oldfig = plt.figure
@@ -100,9 +100,12 @@ if ostype == 'windows':
             # the same as plt.gcf() when in interactive mode)
             fig_window_text = GetWindowText(GetForegroundWindow())
             for i in plt.get_fignums():
-                if plt.figure(i).canvas.manager.get_window_title() == fig_window_text:
-                    fig = plt.figure(i)
+                fig_to_check = oldfig(i)
+                if fig_to_check.canvas.manager.get_window_title() == fig_window_text:
+                    fig = fig_to_check
                     break
+        else:
+            fig_window_text = fig.canvas.manager.get_window_title()
 
         if fig is None:
             raise AttributeError('No figure found!')
@@ -135,7 +138,7 @@ if ostype == 'windows':
         win32clipboard.SetClipboardData(format_id, data)
         win32clipboard.CloseClipboard()
 
-        print(f'Figure copied.')
+        print(f'Figure copied: Window title="{fig_window_text}"')
 
 elif 'qt' in backend.lower():
     # Use Qt version from matplotlib.
@@ -174,9 +177,12 @@ elif 'qt' in backend.lower():
             # the same as plt.gcf() when in interactive mode)
             fig_window_text = QApplication.activeWindow().windowTitle()
             for i in plt.get_fignums():
-                if plt.figure(i).canvas.manager.get_window_title() == fig_window_text:
-                    fig = plt.figure(i)
+                fig_to_check = oldfig(i)
+                if fig_to_check.canvas.manager.get_window_title() == fig_window_text:
+                    fig = fig_to_check
                     break
+        else:
+            fig_window_text = fig.canvas.manager.get_window_title()
 
         if fig is None:
             raise AttributeError('No figure found!')
@@ -189,7 +195,7 @@ elif 'qt' in backend.lower():
             fig.savefig(buf, format='png', *args, **kwargs)
             clipboard().setImage(QImage.fromData(buf.getvalue()))
 
-        print(f'Figure copied.')
+        print(f'Figure copied: Window title="{fig_window_text}"')
 
 elif ostype == 'linux' and backend.lower() == 'gtk3agg':
     # Only GTK 3 is supported, as GTK 4 has totally changed the way clipboard data is handled and I can't figure
@@ -232,13 +238,16 @@ elif ostype == 'linux' and backend.lower() == 'gtk3agg':
             )
 
             for i in plt.get_fignums():
-                if plt.figure(i).canvas.manager.get_window_title() == fig_window_text:
-                    fig = plt.figure(i)
+                fig_to_check = oldfig(i)
+                if fig_to_check.canvas.manager.get_window_title() == fig_window_text:
+                    fig = fig_to_check
                     break
             else:
                 # The above methods apparently no longer work w/ Wayland, so let's just use plt.gcf()
                 # and hope for the best
                 fig = plt.gcf()
+        else:
+            fig_window_text = fig.canvas.manager.get_window_title()
 
         # Store the image in a buffer using savefig(). This has the
         # advantage of applying all the default savefig parameters
@@ -256,26 +265,23 @@ elif ostype == 'linux' and backend.lower() == 'gtk3agg':
             clipboard.set_image(pixbuf)
             clipboard.store()
 
-        print(f'Figure copied.')
+        print(f'Figure copied: Window title="{fig_window_text}"')
 
 else:
     raise ValueError(f'Unsupported matplotlib backend ({backend}) on this OS.')
 
 
+def _clipboard_handler(event):
+    if event.key in ('ctrl+c', 'cmd+c'):
+        copyfig()
+
+
 @wraps(plt.figure)
 def newfig(*args, **kwargs):
-    if not hasattr(newfig, "handler_connected"):
-        newfig.handler_connected = False
-
     fig = oldfig(*args, **kwargs)
-
-    def clipboard_handler(event):
-        if event.key in ('ctrl+c', 'cmd+c'):
-            copyfig()
-
-    if not newfig.handler_connected:
-        fig.canvas.mpl_connect('key_press_event', clipboard_handler)
-        newfig.handler_connected = True
+    if not getattr(fig.canvas, 'copyfig_handler_connected', False):
+        fig.canvas.mpl_connect('key_press_event', _clipboard_handler)
+        fig.canvas.copyfig_handler_connected = True
 
     return fig
 
