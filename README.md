@@ -43,9 +43,13 @@ Uses code & concepts from:
 
 Releases
 --------
+### 3.2.3: 2024-09-03
+
+- Fixed [an issue with copying when there are multiple figures](https://github.com/joshburnett/addcopyfighandler/issues/19).
+
 ### 3.2.2: 2024-06-24
 
-Thanks to @rgw5267 for finding and fixing [a bug related to the event handler being registered multiple times](https://github.com/joshburnett/addcopyfighandler/issues/17).
+- Thanks to @rgw5267 for finding and fixing [a bug related to the event handler being registered multiple times](https://github.com/joshburnett/addcopyfighandler/issues/17).
 
 ### 3.2.1: 2024-06-13
 
