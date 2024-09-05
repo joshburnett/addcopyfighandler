@@ -45,7 +45,7 @@ from functools import wraps
 import matplotlib.backends
 import matplotlib.pyplot as plt
 
-__version__ = '3.2.3'
+__version__ = '3.2.4'
 __version_info__ = tuple(int(i) if i.isdigit() else i for i in __version__.split('.'))
 
 oldfig = plt.figure
@@ -105,7 +105,11 @@ if ostype == 'windows':
                     fig = fig_to_check
                     break
         else:
-            fig_window_text = fig.canvas.manager.get_window_title()
+            try:
+                fig_window_text = fig.canvas.manager.get_window_title()
+            except AttributeError:
+                # A figure was specified, but the backend doesn't support get_window_title(). This happens w/ Agg.
+                fig_window_text = None
 
         if fig is None:
             raise AttributeError('No figure found!')
@@ -138,7 +142,10 @@ if ostype == 'windows':
         win32clipboard.SetClipboardData(format_id, data)
         win32clipboard.CloseClipboard()
 
-        print(f'Figure copied: Window title="{fig_window_text}"')
+        if fig_window_text is not None:
+            print(f'Figure copied: Window title="{fig_window_text}"')
+        else:
+            print('Figure copied')
 
 elif 'qt' in backend.lower():
     # Use Qt version from matplotlib.

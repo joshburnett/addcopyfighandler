@@ -43,6 +43,10 @@ Uses code & concepts from:
 
 Releases
 --------
+### 3.2.4: 2024-09-03
+
+- Fix [issue when using the Agg backend on Windows](https://github.com/joshburnett/addcopyfighandler/issues/20), which doesn't support get_window_title().
+
 ### 3.2.3: 2024-09-03
 
 - Fixed [an issue with copying when there are multiple figures](https://github.com/joshburnett/addcopyfighandler/issues/19).
